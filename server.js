@@ -22,7 +22,10 @@ app.use(
 app.use(bodyPar.json({ limit: "50mb", extended: true }));
 app.use(morgan("combined"));
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5174',
+  credentials: true
+}));
 app.set("views", path.join(__dirname, "/src/views"));
 app.set("view engine", "ejs");
 
