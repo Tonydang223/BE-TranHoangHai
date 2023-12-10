@@ -82,11 +82,8 @@ class AuthController {
         sameSite: "none",
       });
       res.cookie("logged_in", true, {
-        httpOnly: false,
         path: "/",
         maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
-        secure: false,
-        sameSite: "none",
       });
 
       const userInfo = { ...user._doc };
@@ -126,11 +123,8 @@ class AuthController {
             sameSite: "none",
           });
           res.cookie("logged_in", true, {
-            httpOnly: false,
             path: "/",
             maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
-            secure: false,
-            sameSite: "none",
           });
 
           res.status(200).json({
@@ -148,15 +142,12 @@ class AuthController {
     try {
       res.clearCookie("rf_token", {
         path: "/",
-        sameSite: "none",
       });
       res.clearCookie("access_token", {
         path: "/",
-        sameSite: "none",
       });
       res.clearCookie("logged_in", {
         path: "/",
-        sameSite: "none",
       });
 
       res.status(200).json({ msg: "Đăng xuất thành công !" });
