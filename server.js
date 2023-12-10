@@ -44,6 +44,7 @@ app.use(
         callback(null, true);
       }
     },
+    optionsSuccessStatus: 200,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'PATCH'],
   }),
