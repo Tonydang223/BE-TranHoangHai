@@ -60,11 +60,11 @@ class AuthController {
             httpOnly: true,
             path: "/",
             maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
-            secure: false,
+            secure: true,
             sameSite: "none"
           });
           res.cookie("logged_in", true, {
-            httpOnly: false,
+            httpOnly: true,
             path: "/",
             maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
             secure: false,
@@ -104,11 +104,11 @@ class AuthController {
                   httpOnly: true,
                   path: "/",
                   maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
-                  secure: false,
+                  secure: true,
                   sameSite: "none"
                 });
                 res.cookie("logged_in", true, {
-                  httpOnly: false,
+                  httpOnly: true,
                   path: "/",
                   maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
                   secure: false,
