@@ -30,6 +30,7 @@ const prodOrigins = [
 ];
 const devOrigin = ['http://localhost:3000'];
 const allowedOrigins = process.env.NODE_ENV === 'production' ? prodOrigins : devOrigin;
+console.log(process.env.NODE_ENV);
 
 app.use(
   cors({
@@ -44,9 +45,8 @@ app.use(
         callback(null, true);
       }
     },
-    optionsSuccessStatus: 200,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'PATCH'],
   }),
 );
 app.set("views", path.join(__dirname, "/src/views"));
