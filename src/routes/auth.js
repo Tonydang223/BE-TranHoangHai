@@ -13,7 +13,7 @@ router
 
  router.post('/forgotPass', authController.forgotPass);
 
-router.get('/logout', authMid.userGuard, authController.logout);
+router.post('/logout', authMid.userGuard, authController.logout);
 router.get("/refresh_token", authController.refreshToken);
 
 
