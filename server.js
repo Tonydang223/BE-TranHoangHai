@@ -11,6 +11,8 @@ const http = require("http").createServer(app);
 const PORT = process.env.PORT || 8088;
 require("dotenv").config();
 
+
+
 app.use(cookieParser());
 app.get("/", (req, res) => {
   res.send("Welcom Nam Y Đường Server");
@@ -22,10 +24,31 @@ app.use(
 app.use(bodyPar.json({ limit: "50mb", extended: true }));
 app.use(morgan("combined"));
 
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
+const prodOrigins = [
+  'https://Tonydang223.github.io/adminTHH',
+  'https://Tonydang223.github.io',
+];
+const devOrigin = ['http://localhost:3000'];
+const allowedOrigins = process.env.NODE_ENV === 'production' ? prodOrigins : devOrigin;
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (process.env.NODE_ENV === 'production') {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error(`${origin} not allowed by cors`));
+        }
+      } else {
+        callback(null, true);
+      }
+    },
+    optionsSuccessStatus: 200,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  }),
+);
 app.set("views", path.join(__dirname, "/src/views"));
 app.set("view engine", "ejs");
 
