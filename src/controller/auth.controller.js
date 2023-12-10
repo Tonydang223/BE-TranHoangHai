@@ -141,13 +141,22 @@ class AuthController {
   async logout(req, res, next) {
     try {
       res.clearCookie("rf_token", {
+        httpOnly: true,
         path: "/",
+        sameSite: "none",
+        secure: true
       });
       res.clearCookie("access_token", {
+        httpOnly: true,
         path: "/",
+        sameSite: "none",
+        secure: true
       });
       res.clearCookie("logged_in", {
+        httpOnly: true,
         path: "/",
+        sameSite: "none",
+        secure: true
       });
 
       res.status(200).json({ msg: "Đăng xuất thành công !" });
