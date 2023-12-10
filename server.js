@@ -25,10 +25,10 @@ app.use(bodyPar.json({ limit: "50mb", extended: true }));
 app.use(morgan("combined"));
 
 const prodOrigins = [
-  'https://tonydang223.github.io/adminTHH',
   'https://tonydang223.github.io',
+  'https://tonydang223.github.io/Admin-THH'
 ];
-const devOrigin = ['http://localhost:3000'];
+const devOrigin = ['http://127.0.0.1:5173'];
 const allowedOrigins = process.env.NODE_ENV === 'production' ? prodOrigins : devOrigin;
 
 app.use(
