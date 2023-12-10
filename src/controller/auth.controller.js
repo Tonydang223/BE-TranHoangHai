@@ -53,7 +53,7 @@ class AuthController {
             path: "/",
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
             secure: true,
-            sameSite: "strict",
+            sameSite: "none",
           });
 
           res.cookie("access_token", accessToken, {
@@ -61,14 +61,14 @@ class AuthController {
             path: "/",
             maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
             secure: false,
-            sameSite: "strict"
+            sameSite: "none"
           });
           res.cookie("logged_in", true, {
             httpOnly: false,
             path: "/",
             maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
             secure: false,
-            sameSite: "strict"
+            sameSite: "none"
           });
 
           const userInfo = {...user._doc};
@@ -105,14 +105,14 @@ class AuthController {
                   path: "/",
                   maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
                   secure: false,
-                  sameSite: "strict"
+                  sameSite: "none"
                 });
                 res.cookie("logged_in", true, {
                   httpOnly: false,
                   path: "/",
                   maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
                   secure: false,
-                  sameSite: "strict"
+                  sameSite: "none"
                 });
       
                 res.status(200).json({
