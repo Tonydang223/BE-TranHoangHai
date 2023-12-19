@@ -8,6 +8,8 @@ const postSchame = new Schema(
     created_by: { type: String, default: 'tstranhoanghai.pmkt@gmail.com' },
     thumbnail: {type: Object, required: true },
     isDeleted: { type: Boolean, default: false},
+    categories: { type: String, required: true },
+    short_des: { type: String, required: true },
   },
   { timestamps: true }
 );
