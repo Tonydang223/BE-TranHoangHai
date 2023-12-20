@@ -87,7 +87,6 @@ class Product {
         },
         {multi: true}
       )
-      console.log("🚀 ~ file: product.controller.js:92 ~ Product ~ deleteProductReset ~ dataDel:", dataDel)
       if(dataDel.modifiedCount < 1) {
         return res.status(400).json({msg: 'The id is not existed or delete failed !'});
       }

@@ -63,7 +63,6 @@ class Course {
  }
   async getOneCourse(req, res, next) {
     try {
-      console.log(req.params.id);
       const data = await CourseM.findOne({_id: req.params.id}).populate({
         path: "comment",
         populate: {

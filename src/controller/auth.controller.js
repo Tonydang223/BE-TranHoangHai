@@ -108,7 +108,6 @@ class AuthController {
         process.env.REFRESH_TOKEN_SECRET,
         async (err, result) => {
           if (err) {
-            console.log("loi");
             return res.status(400).json({ msg: "Hãy đăng nhập lại lần nữa !" });
           }
 
