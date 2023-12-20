@@ -178,7 +178,7 @@ class AuthController {
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "1h" }
       );
-      const url = `${process.env.URL_CLIENT}/api/auth/resetPass/${user._doc._id}/${token}`;
+      const url = `${process.env.API_URL}/api/auth/resetPass/${user._doc._id}/${token}`;
       const contentMail =
         "You click the below button to complete changing your new password.";
       const titleMail = "Changing a new password";
