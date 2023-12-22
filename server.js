@@ -27,7 +27,7 @@ app.use(morgan("combined"));
 const prodOrigins = [
   'https://tonydang223.github.io',
   'https://tonydang223.github.io/Admin-THH',
-  'https://vermillion-parfait-fbc644.netlify.app',
+  'https://tranhoanghai.netlify.app',
    process.env.API_URL
 ];
 const devOrigin = ['http://127.0.0.1:5173'];
