@@ -81,10 +81,6 @@ class AuthController {
         secure: true,
         sameSite: "none",
       });
-      res.cookie("logged_in", true, {
-        path: "/",
-        maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
-      });
 
       const userInfo = { ...user._doc };
       delete userInfo.password;
@@ -120,10 +116,6 @@ class AuthController {
             maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
             secure: true,
             sameSite: "none",
-          });
-          res.cookie("logged_in", true, {
-            path: "/",
-            maxAge: 1 * 24 * 60 * 60 * 1000, // 1days
           });
 
           res.status(200).json({
@@ -263,7 +255,7 @@ class AuthController {
 
 const createAccessToken = (payload) => {
   return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "20s",
+    expiresIn: "1d",
   });
 };
 
