@@ -38,5 +38,6 @@ router.post(
   );
 
 router.get('/mine', authMid.userGuard, courseController.getMyCourse)
+router.get('/code/:id/:codeHex', authMid.userGuard, courseController.getCodeCourse)
 
 module.exports = router;

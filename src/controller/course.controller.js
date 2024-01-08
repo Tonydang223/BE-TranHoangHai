@@ -1,7 +1,7 @@
 const { uploads } = require("../config/cloudinary");
-const { TYPE_COMMENT } = require("../config/constants")
+const { TYPE_COMMENT } = require("../config/constants");
 const CommentM = require("../model/comments.model");
-const LectureM = require("../model/lecture.model")
+const LectureM = require("../model/lecture.model");
 const CourseM = require("../model/course.model");
 const fs = require("fs");
 
@@ -32,11 +32,12 @@ class Course {
       const data = await CourseM.findByIdAndUpdate(
         { _id: req.params.id },
         {
-          $set: { ...req.body }
+          $set: { ...req.body },
         },
-        {new: true}
+        { new: true }
       );
-      if(!data) return res.status(404).json({ msg: 'The course was not found!'});
+      if (!data)
+        return res.status(404).json({ msg: "The course was not found!" });
       res
         .status(200)
         .json({ msg: "The course has been updated successfully!", data });
@@ -45,72 +46,88 @@ class Course {
     }
   }
   async getMyCourse(req, res, next) {
-     try {
-        const data = await CourseM.find({students: {$in: [req.usr.id]}});
-        return res.status(200).json({msg: 'Get your course successfully !', data});
-        
-     } catch (error) {
-        return res.status(500).json({ msg: error.message });
-     }
+    try {
+      const data = await CourseM.find({ students: { $in: [req.usr.id] } });
+      return res
+        .status(200)
+        .json({ msg: "Get your course successfully !", data });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
   }
   async getAllCourses(req, res, next) {
     try {
-       const data = await CourseM.find().sort('-createdAt');
-       res.status(200).json({ msg: 'Get all courses successfully!', data });
+      const data = await CourseM.find().sort("-createdAt").select("-code");
+      res.status(200).json({ msg: "Get all courses successfully!", data });
     } catch (error) {
-       return res.status(500).json({ msg: error.message });
+      return res.status(500).json({ msg: error.message });
     }
- }
+  }
   async getOneCourse(req, res, next) {
     try {
-      const data = await CourseM.findOne({_id: req.params.id}).populate({
-        path: "comment",
-        populate: {
-          path: "by_user likes",
+      const data = await CourseM.findOne({ _id: req.params.id }).populate([
+        {
+          path: "comment",
+          populate: {
+            path: "by_user likes",
+            select: "-password",
+          },
+          options: { sort: { commentedAt: -1 } },
+        },
+        {
+          path: "students",
           select: "-password",
         },
-        options: { sort: { commentedAt: -1 } },
-      });;
-    if(!data) return res.status(404).json({ msg: 'The course not found !'})
-    res.status(200).json({ msg: 'Get one course successfully!', data });
+      ]);
+      if (!data) return res.status(404).json({ msg: "The course not found !" });
+      res.status(200).json({ msg: "Get one course successfully!", data });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async getCodeCourse(req, res, next) {
+    try {
+      const data = await CourseM.findOne({ _id: req.params.id, code: req.params.codeHex });
+      if (!data) return res.status(404).json({ msg: "The course not found !" });
+      res.status(200).json({ msg: "Get code course successfully!", code: data._doc.code });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async deleteCourseRestore(req, res, next) {
     try {
-
       const dataDel = await CourseM.updateMany(
-        {_id: {$in: req.body.ids}},
+        { _id: { $in: req.body.ids } },
         {
-          $set: {isDeleted: true}
+          $set: { isDeleted: true },
         },
-        {multi: true}
-      )
-      if(dataDel.modifiedCount < 1) {
-        return res.status(400).json({msg: 'The id is not existed or delete failed !'});
+        { multi: true }
+      );
+      if (dataDel.modifiedCount < 1) {
+        return res
+          .status(400)
+          .json({ msg: "The id is not existed or delete failed !" });
       }
-      res.status(200).json({msg: 'The courses were deleted temporarily !'})
-      
+      res.status(200).json({ msg: "The courses were deleted temporarily !" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async deleteCourseRestoreBack(req, res, next) {
     try {
-
       const dataDel = await CourseM.updateMany(
-        {_id: {$in: req.body.ids}},
+        { _id: { $in: req.body.ids } },
         {
-          $set: {isDeleted: false}
+          $set: { isDeleted: false },
         },
-        {multi: true}
-      )
-      if(dataDel.modifiedCount < 1) {
-        return res.status(400).json({msg: 'The id is not existed or delete failed !'});
+        { multi: true }
+      );
+      if (dataDel.modifiedCount < 1) {
+        return res
+          .status(400)
+          .json({ msg: "The id is not existed or delete failed !" });
       }
-      res.status(200).json({msg: 'The courses were deleted temporarily !'})
-      
+      res.status(200).json({ msg: "The courses were deleted temporarily !" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
@@ -118,21 +135,21 @@ class Course {
 
   async deleteCourse(req, res, next) {
     try {
+      const dataDel = await CourseM.deleteMany({ _id: { $in: req.body.ids } });
 
-        const dataDel = await CourseM.deleteMany(
-          { _id: {$in: req.body.ids} },
-        );
+      await LectureM.deleteMany({ course: { $in: req.body.ids } });
+      await CommentM.deleteMany({
+        $and: [{ type: TYPE_COMMENT[1] }, { course_id: { $in: req.body.ids } }],
+      });
 
-      await LectureM.deleteMany({course: {$in: req.body.ids}});
-      await CommentM.deleteMany({$and: [{type: TYPE_COMMENT[1]}, {course_id: {$in: req.body.ids}}]});
-  
-        if(dataDel.deletedCount < 1) {
-          return res.status(400).json({msg: 'The id is not existed or delete failed !'});
-        }
-        return res.status(200).json({ msg: "The course was deleted !" });
-
+      if (dataDel.deletedCount < 1) {
+        return res
+          .status(400)
+          .json({ msg: "The id is not existed or delete failed !" });
+      }
+      return res.status(200).json({ msg: "The course was deleted !" });
     } catch (error) {
-        return res.status(500).json({ msg: error.message });
+      return res.status(500).json({ msg: error.message });
     }
   }
 }

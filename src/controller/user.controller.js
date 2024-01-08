@@ -1,14 +1,48 @@
 const { uploads } = require("../config/cloudinary");
 const Usrm = require("../model/user.model");
-const fs = require("fs");
 const constants = require("../../src/config/constants");
-const bcrypt = require('bcrypt');
+const fs = require("fs");
+const bcrypt = require("bcrypt");
 
 class UserController {
   async getAllUsers(req, res, next) {
     try {
       const allusers = await Usrm.find().sort("-createdAt");
-      return res.status(200).send({ msg: "take all users ok", data: allusers });
+      return res.status(200).json({ msg: "take all users ok", data: allusers });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async createUser(req, res) {
+    try {
+      const { email, password, username } = req.body;
+
+      const usr = await Usrm.findOne({ email: email });
+
+      if (usr) return res.status(409).json({ mgs: "The user is existed!" });
+
+      if (
+        !String(password).match(constants.passwordRegex) ||
+        !String(email).match(constants.emailRegex)
+      ) {
+        return res
+          .status(400)
+          .json({ msg: "Email or password is not right format" });
+      }
+      if (!email || !password || !username)
+        return res.status(400).json({ msg: "All fields must be provided !" });
+
+      const user = new Usrm({
+        email,
+        password,
+        firstName: username,
+      });
+      const usersaved = await user.save();
+
+      return res.status(200).json({
+        msg: "Bạn đã tạo thành công user!",
+        data: { ...usersaved._doc, password: "" },
+      });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
@@ -36,6 +70,28 @@ class UserController {
       return res.status(500).json({ msg: error.message });
     }
   }
+  async changePassAdmin(req, res, next) {
+    try {
+      const { new_password } = req.body;
+      const usr = await Usrm.findOne({ _id: req.params.id });
+
+      if (!usr) return res.status(400).json({ msg: "The user is not found!" });
+
+      const salt = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(new_password, salt);
+
+      await Usrm.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: { password: hashPassword } },
+        { new: true }
+      );
+      return res
+        .status(200)
+        .json({ msg: "Mật khẩu đã được thay đổi!", isOk: true });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
   async updatePass(req, res, next) {
     try {
       const { confirm, password, new_password } = req.body;
@@ -50,17 +106,17 @@ class UserController {
           .status(400)
           .json({ msg: `Password's format is not correct or not match!!!` });
 
-      const usr = await Usrm.findOne({_id: req.usr.id})
+      const usr = await Usrm.findOne({ _id: req.usr.id });
 
       const salt = await bcrypt.genSalt(10);
       const oldPass = await bcrypt.compareSync(password, usr.password);
       const hashPassword = await bcrypt.hash(new_password, salt);
 
-
-      if (!oldPass) return res.status(400).json({ msg: "The password is not match!" });
+      if (!oldPass)
+        return res.status(400).json({ msg: "The password is not match!" });
 
       await Usrm.findByIdAndUpdate(
-        { _id:  req.usr.id},
+        { _id: req.usr.id },
         { $set: { password: hashPassword } },
         { new: true }
       );
@@ -94,12 +150,10 @@ class UserController {
         fs.unlinkSync(req.file.path);
       }
 
-      res
-        .status(200)
-        .json({
-          msg: "Update successfully!",
-          data: { ...usr._doc, password: "" },
-        });
+      res.status(200).json({
+        msg: "Update successfully!",
+        data: { ...usr._doc, password: "" },
+      });
       return res.status(200).json({ msg: "Upload ok" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -121,12 +175,10 @@ class UserController {
         { new: true }
       );
 
-      return res
-        .status(200)
-        .json({
-          msg: "Blocked the user successfully!",
-          data: { ...blockUser._doc, password: "" },
-        });
+      return res.status(200).json({
+        msg: "Blocked the user successfully!",
+        data: { ...blockUser._doc, password: "" },
+      });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
@@ -147,12 +199,10 @@ class UserController {
         { new: true }
       );
 
-      return res
-        .status(200)
-        .json({
-          msg: "Unblocked the user successfully!",
-          data: { ...blockUser._doc, password: "" },
-        });
+      return res.status(200).json({
+        msg: "Unblocked the user successfully!",
+        data: { ...blockUser._doc, password: "" },
+      });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }

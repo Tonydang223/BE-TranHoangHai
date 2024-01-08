@@ -11,6 +11,10 @@ const lectureSchame = new Schema(
       type: Object,
       required: true,
     },
+    videoLecture: {
+      type: Object,
+      required: true,
+    },
     desc: {
       type: String,
       required: true,

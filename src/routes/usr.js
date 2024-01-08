@@ -14,6 +14,9 @@ router.post('/updatePass', authMid.userGuard ,userController.updatePass);
 router.post('/uploadImg', authMid.userGuard, upload.single('avatar'), userController.uploadImgProfile);
 router.post('/block/:id', authMid.userGuard, verifyRole(ROLES[1]), userController.blockUsr);
 router.post('/unblock/:id', authMid.userGuard, verifyRole(ROLES[1]), userController.unBlockUsr);
+router.post('/create', authMid.userGuard, verifyRole(ROLES[1]), userController.createUser);
+router.post('/changePass/:id', authMid.userGuard, verifyRole(ROLES[1]), userController.changePassAdmin);
+
 
 
 

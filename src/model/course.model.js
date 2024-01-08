@@ -13,6 +13,7 @@ const courseSchame = new Schema(
     students: [{ type: mongoose.Types.ObjectId, ref: "users" }],
     isDeleted: { type: Boolean, default: false},
     short_des: { type: String, required: true },
+    code: {type: String, required: true},
   },
   { timestamps: true }
 );

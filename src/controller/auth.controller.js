@@ -173,7 +173,7 @@ class AuthController {
       const contentMail =
         "You click the below button to complete changing your new password.";
       const titleMail = "Changing a new password";
-      sendEmail.emailActive(
+      await sendEmail.emailActive(
         email,
         url,
         "Reset Password Here",

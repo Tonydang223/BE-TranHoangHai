@@ -11,8 +11,6 @@ const http = require("http").createServer(app);
 const PORT = process.env.PORT || 8088;
 require("dotenv").config();
 
-
-
 app.use(cookieParser());
 app.get("/", (req, res) => {
   res.send("Welcom Nam Y Đường Server");
