@@ -23,8 +23,6 @@ app.use(bodyPar.json({ limit: "50mb", extended: true }));
 app.use(morgan("combined"));
 
 const prodOrigins = [
-  'https://tonydang223.github.io',
-  'https://tonydang223.github.io/Admin-THH',
   'https://tranhoanghai.netlify.app',
    process.env.API_URL
 ];

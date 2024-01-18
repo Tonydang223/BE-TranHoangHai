@@ -14,6 +14,7 @@ const courseSchame = new Schema(
     isDeleted: { type: Boolean, default: false},
     short_des: { type: String, required: true },
     code: {type: String, required: true},
+    confirmer: [{ type: mongoose.Types.ObjectId, ref: "users"}]
   },
   { timestamps: true }
 );

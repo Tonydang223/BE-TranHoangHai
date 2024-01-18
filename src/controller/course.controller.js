@@ -3,6 +3,7 @@ const { TYPE_COMMENT } = require("../config/constants");
 const CommentM = require("../model/comments.model");
 const LectureM = require("../model/lecture.model");
 const CourseM = require("../model/course.model");
+const UserM = require("../model/user.model");
 const fs = require("fs");
 
 class Course {
@@ -47,7 +48,7 @@ class Course {
   }
   async getMyCourse(req, res, next) {
     try {
-      const data = await CourseM.find({ students: { $in: [req.usr.id] } });
+      const data = await CourseM.find({ students: { $in: [req.usr.id] } }).select("-code");
       return res
         .status(200)
         .json({ msg: "Get your course successfully !", data });
@@ -65,6 +66,8 @@ class Course {
   }
   async getOneCourse(req, res, next) {
     try {
+      const usr = await UserM.findOne({_id: req.body.idUsr});
+
       const data = await CourseM.findOne({ _id: req.params.id }).populate([
         {
           path: "comment",
@@ -78,18 +81,48 @@ class Course {
           path: "students",
           select: "-password",
         },
-      ]);
+      ]).select(`${usr && usr.role !== 1 ? "-code": ""}`);
+
       if (!data) return res.status(404).json({ msg: "The course not found !" });
       res.status(200).json({ msg: "Get one course successfully!", data });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
+  async confirmCodeCourse(req, res, next) {
+    try {
+      const { code } = req.body;
+
+      const data = await CourseM.findOne({
+        _id: req.params.id,
+      });
+
+      if(code !== data.code) {
+        return res.status(400).json({ msg: "The code is not right !"});
+      }
+      if (!data) return res.status(404).json({ msg: "The course not found !" });
+
+      await CourseM.findOneAndUpdate(
+        { _id: req.params.id },
+        { $push: { confirmer: req.usr.id } },
+        { $upsert: true }
+      );
+
+      return res.status(200).json({ msg: "Confirm code ok!"})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
   async getCodeCourse(req, res, next) {
     try {
-      const data = await CourseM.findOne({ _id: req.params.id, code: req.params.codeHex });
+      const data = await CourseM.findOne({
+        _id: req.params.id,
+        code: req.params.codeHex,
+      });
       if (!data) return res.status(404).json({ msg: "The course not found !" });
-      res.status(200).json({ msg: "Get code course successfully!", code: data._doc.code });
+      res
+        .status(200)
+        .json({ msg: "Get code course successfully!", code: data._doc.code });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }

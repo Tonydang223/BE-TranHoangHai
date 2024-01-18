@@ -37,7 +37,7 @@ router.post(
     courseController.deleteCourseRestoreBack
   );
 
-router.get('/mine', authMid.userGuard, courseController.getMyCourse)
-router.get('/code/:id/:codeHex', authMid.userGuard, courseController.getCodeCourse)
+router.get('/mine', authMid.userGuard, courseController.getMyCourse);
+router.post('/confirm/:id', authMid.userGuard, courseController.confirmCodeCourse);
 
 module.exports = router;
