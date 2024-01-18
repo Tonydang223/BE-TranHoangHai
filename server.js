@@ -24,6 +24,7 @@ app.use(morgan("combined"));
 
 const prodOrigins = [
   'https://tranhoanghai.netlify.app',
+  'https://tranhoanghai.vn',
    process.env.API_URL
 ];
 const devOrigin = ['http://127.0.0.1:5173'];
