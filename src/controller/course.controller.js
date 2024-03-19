@@ -48,7 +48,7 @@ class Course {
   }
   async getMyCourse(req, res, next) {
     try {
-      const data = await CourseM.find({ students: { $in: [req.usr.id] } }).select("-code");
+      const data = await CourseM.find().select("-code");
       return res
         .status(200)
         .json({ msg: "Get your course successfully !", data });
@@ -58,7 +58,10 @@ class Course {
   }
   async getAllCourses(req, res, next) {
     try {
-      const data = await CourseM.find().sort("-createdAt").select("-code");
+
+      const data = await CourseM.find()
+        .sort("-createdAt")
+        .select("-code");
       res.status(200).json({ msg: "Get all courses successfully!", data });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -66,22 +69,24 @@ class Course {
   }
   async getOneCourse(req, res, next) {
     try {
-      const usr = await UserM.findOne({_id: req.body.idUsr});
+      const usr = await UserM.findOne({ _id: req.params.user });
 
-      const data = await CourseM.findOne({ _id: req.params.id }).populate([
-        {
-          path: "comment",
-          populate: {
-            path: "by_user likes",
+      const data = await CourseM.findOne({ _id: req.params.id })
+        .populate([
+          {
+            path: "comment",
+            populate: {
+              path: "by_user likes",
+              select: "-password",
+            },
+            options: { sort: { commentedAt: -1 } },
+          },
+          {
+            path: "students",
             select: "-password",
           },
-          options: { sort: { commentedAt: -1 } },
-        },
-        {
-          path: "students",
-          select: "-password",
-        },
-      ]).select(`${usr && usr.role !== 1 ? "-code": ""}`);
+        ])
+        .select(`${usr && usr.role !== 1 ? "-code" : ""}`);
 
       if (!data) return res.status(404).json({ msg: "The course not found !" });
       res.status(200).json({ msg: "Get one course successfully!", data });
@@ -97,8 +102,8 @@ class Course {
         _id: req.params.id,
       });
 
-      if(code !== data.code) {
-        return res.status(400).json({ msg: "The code is not right !"});
+      if (code !== data.code) {
+        return res.status(400).json({ msg: "The code is not right !" });
       }
       if (!data) return res.status(404).json({ msg: "The course not found !" });
 
@@ -108,7 +113,7 @@ class Course {
         { $upsert: true }
       );
 
-      return res.status(200).json({ msg: "Confirm code ok!"})
+      return res.status(200).json({ msg: "Confirm code ok!" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }

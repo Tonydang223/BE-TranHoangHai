@@ -7,8 +7,10 @@ const { ROLES } = require("../config/constants");
 
 router
   .route("/parts")
-  .post(authMid.userGuard, verifyRole(ROLES[1]), courseController.createCourse)
-  .get(courseController.getAllCourses)
+  .post(authMid.userGuard, verifyRole(ROLES[1]), courseController.createCourse);
+
+router.route("/get-all").get(courseController.getAllCourses);
+
 
 router.get('/parts/:id', courseController.getOneCourse);
 router.post(
